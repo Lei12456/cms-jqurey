@@ -1,0 +1,330 @@
+
+<div class="user">
+  <ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" id="home-tab" data-toggle="tab" href="#admin" role="tab" aria-controls="home" aria-selected="true">管理员</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="profile-tab" data-toggle="tab" href="#editor" role="tab" aria-controls="profile" aria-selected="false">编辑</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="contact-tab" data-toggle="tab" href="#user" role="tab" aria-controls="contact" aria-selected="false">会员</a>
+    </li>
+  </ul>
+  <div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="admin" role="tabpanel" aria-labelledby="home-tab">
+      <button class="btn btn-primary" id="addUserBtn">新增</button>
+      <div id="adminPage">
+      </div>
+    </div>
+    <div class="tab-pane fade" id="editor" role="tabpanel" aria-labelledby="profile-tab"></div>
+    <div class="tab-pane fade" id="user" role="tabpanel" aria-labelledby="contact-tab"></div>
+  </div>
+  <!-- 新增模态框 -->
+  <div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="userModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="userModalLabel">新增用户</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="addForm">
+            <div class="form-group">
+              <label for="user-username">用户名:</label>
+              <input type="email" class="form-control" id="user-username" aria-describedby="emailHelp">
+            </div>
+            <div class="form-group">
+              <label for="user-nickname">昵称:</label>
+              <input type="email" class="form-control" id="user-nickname" aria-describedby="emailHelp">
+            </div>
+            <div class="form-group">
+              <label for="user-password">密码:</label>
+              <input type="password" class="form-control" id="user-password" aria-describedby="emailHelp">
+            </div>
+            <div class="form-group">
+              <label for="passwordTrue">确认密码:</label>
+              <input type="password" class="form-control" id="passwordTrue" aria-describedby="emailHelp">
+            </div>
+            <div class="form-group">
+              <label for="telephone">用户头像:</label>
+              <input type="hidden" id="imagepath" name="">  <!-- 保存的图片id 用于表单提交 -->
+              <span id="uploadBtn" class="btn btn-info">上传</span><!-- 上传按钮 -->
+              <div class="show"></div> <!--输出图片-->
+            </div>
+            <div class="form-group">
+              <label for="user-email">邮箱</label>
+              <input type="email" class="form-control" id="user-email" aria-describedby="emailHelp">
+            </div>
+            <div class="form-group">
+              <label for="user-role">注册角色</label>
+              <select name="" id="user-role" class="form-control">
+                <option value="admin">管理员</option>
+                <option value="editor">编辑</option>
+                <option value="user">会员</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+          <button type="button" class="btn btn-primary" id="saveBtn">确定</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  var imgUrl;
+  var id;
+  // 商品图片上传
+  a = $("#uploadBtn").FraUpload({
+    view        : ".show",      // 视图输出位置
+    url         : "http://134.175.100.63:5588/file/upload", // 上传接口
+    fetch       : "img",   // 视图现在只支持img
+    debug       : false,    // 是否开启调试模式
+    /* 外部获得的回调接口 */
+    onLoad: function(e){                    // 选择文件的回调方法
+        console.log("外部: 初始化完成...");
+    },
+    breforePort: function (e) {         // 发送前触发
+        console.log("文件发送之前触发");
+    },  
+    successPort: function (e) {         // 发送成功触发
+        console.log("文件发送成功");
+        onload_image()
+    },
+    errorPort: function (e) {       // 发送失败触发
+        console.log("文件发送失败");
+        onload_image()
+    },
+    deletePost: function(e){    // 删除文件触发
+        console.log("删除文件");
+        console.log(e);
+        alert('删除了'+e.filename)
+        onload_image()
+    },
+    sort: function(e){      // 排序触发
+        console.log("排序");
+        onload_image()
+    },
+  });
+  // 获取图片上传信息
+  function onload_image(){
+      var res = a.FraUpload.show()
+      var ids = [];
+      for(let k in res){
+          this_val = res[k]
+          if(!empty(res[k]['is_upload']) && !empty(res[k]['ajax'])){
+              ajax_value = res[k]['ajax'];
+              ids.push(ajax_value.data.id)
+          }
+      }
+      $("#imagepath").val(ids);
+      imgUrl = ' http://134.175.100.63:8686/group1/' + res[0].ajax.data.id;
+  }
+  //改变用户的状态,事件代理
+  $('#user').on('click','.chengeStatus',function(){
+    //获取当前用户id
+    var id = $(this).closest('ul').find('input').val();
+    myAjax('/manager/user/findUserById','get',{id:id},function(res){
+      var obj = {
+          id:id,
+          status:!res.data.enabled
+      }
+      myAjax('/manager/user/changeStatus','post',obj,function(res){
+        findAllUser();
+      })
+    })
+  })
+  //保存按钮
+  $('#saveBtn').click(function(){
+    if(id){
+      var obj =  {
+        id:id,
+        username:$('#user-username').val(),
+        nickname:$('#user-nickname').val(),
+        password:$('#user-password').val(),
+        enabled:'1',
+        userface:imgUrl,
+        email:$('#user-email').val(),
+        role:$('#user-role').val()
+      }
+    }else{
+        var obj =  {
+        username:$('#user-username').val(),
+        nickname:$('#user-nickname').val(),
+        password:$('#user-password').val(),
+        enabled:'1',
+        userface:imgUrl,
+        email:$('#user-email').val(),
+        role:$('#user-role').val()
+      }
+    }
+    myAjax('/manager/user/reg','post',obj,function(res){
+        if(res.data == 200){
+          findAllUser();
+          $('#userModal').modal('hide');
+          alert('注册成功');
+        }else{
+          alert('注册失败');
+        } 
+    })
+    id = null;
+    findAllUser();
+    $('#userModal').modal('hide');
+  })
+  //判断密码和确认密码
+  $('#user-passwordTrue').blur(function(){
+    var  password = $('#user-password').val();
+    var  passwordTrue = $('#user-passwordTrue').val();
+    if(password != passwordTrue){
+      alert('请保持输入密码一致');
+    }
+  })
+  //新增按钮事件
+  $('#addUserBtn').click(function(){
+    $('#userModal').modal('show');
+  })
+  //删除用户信息,事件代理
+  $('.tab-content').on('click','.user-delete',function(){
+    var deleteId = $(this).closest('ul').find('input').val();
+    var result = confirm('确定删除吗');
+    if(result){
+      myAjax('/manager/user/deleteUserById','get',{id:deleteId},function(res){
+        if(res.status == 200){
+          findAllUser();
+          alert(res.message);
+        }else{
+          alert('删除失败'); 
+        }
+      })
+    }
+  })
+  //修改用户信息
+  $('.tab-content').on('click','.user-edit',function(){
+    $('#userModalLabel').text('修改用户信息');
+    id = $(this).closest('ul').find('input').val();
+    myAjax('/manager/user/findUserById','get',{id:id},function(res){
+      $('#user-username').val(res.data.username);
+      $('#user-nickname').val(res.data.nickname);
+      $('#user-password').val(res.password);
+      $('#user-email').val(res.data.email);
+      $('#user-role').val(res.data.role);
+    })
+    $('#userModal').modal('show');
+  })
+  //查询所有用户
+  findAllUser();
+  function findAllUser(){
+    myAjax('/manager/user/findAllUser','get',{},function(res){
+      //清空表格数据
+      $('#user').empty();
+      $('#editor').empty();
+      $('#adminPage').empty();
+      var admin = res.data.filter(function(item){
+        return item.role =='admin';
+      })
+      var editor = res.data.filter(function(item){
+        return item.role =='editor';
+      })
+      var user = res.data.filter(function(item){
+        return item.role =='user';
+      })
+      //遍历管理员用户
+      admin.forEach(function(item){
+      var newDivAdmin = $(`
+        <div class="card" style="width: 18rem;display:inline-block;margin:10px 10px;">
+          <img src="`+(item.userface ?item.userface : '' )+`" class="card-img-top" alt="">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item" style="display:none">
+              <input value='`+item.id+`'></input>
+            </li>
+            <li class="list-group-item">
+              <div>用户名:</div>
+              <div>`+item.username+`</div>
+            </li>
+            <li class="list-group-item">
+              <div>真是姓名:</div>
+              <div>`+item.nickname+`</div>
+            </li>
+            <li class="list-group-item">
+              <div>邮箱:</div>
+              <div>`+item.email+`</div>
+            </li>
+            <li class="list-group-item">
+              <div><i class="iconfont icon-shanchu user-delete" title="删除"></i></div>
+              <div><i class="iconfont icon-xiugai user-edit" title="修改"></i></div>
+            </li>
+          </ul>
+        </div>
+        `)
+        $('#adminPage').append(newDivAdmin);
+      });
+      //遍历编辑用户
+      editor.forEach(function(item){
+        var newDivEditor = $(`
+        <div class="card" style="width: 18rem;display:inline-block;margin:10px 10px;">
+          <img src="`+(item.userface ?item.userface : '' )+`" class="card-img-top" alt="">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item" style="display:none">
+              <input value='`+item.id+`'></input>
+            </li>
+            <li class="list-group-item">
+              <div>用户名:</div>
+              <div>`+item.username+`</div>
+            </li>
+            <li class="list-group-item">
+              <div>真是姓名:</div>
+              <div>`+item.nickname+`</div>
+            </li>
+            <li class="list-group-item">
+              <div>邮箱:</div>
+              <div>`+item.email+`</div>
+            </li>
+            <li class="list-group-item">
+              <div><i class="iconfont icon-shanchu user-delete" title="删除"></i></div>
+              <div><i class="iconfont icon-xiugai user-edit" title="修改"></i></div>
+            </li>
+          </ul>
+        </div>
+        `)
+        $('#editor').append(newDivEditor);
+      })
+      //遍历会员用户
+      user.forEach(function(item){
+        var newDivUser = $(`
+        <div class="card" style="width: 18rem;display:inline-block;margin:10px 10px;">
+          <img src="`+(item.userface ?item.userface : '' )+`" class="card-img-top" alt="">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item" style="display:none">
+              <input value='`+item.id+`'></input>
+            </li>
+            <li class="list-group-item">
+              <div>用户名:</div>
+              <div>`+item.username+`</div>
+            </li>
+            <li class="list-group-item">
+              <div>真是姓名:</div>
+              <div>`+item.nickname+`</div>
+            </li>
+            <li class="list-group-item">
+              <div>邮箱:</div>
+              <div>`+item.email+`</div>
+            </li>
+            <li class="list-group-item">
+              <div>操作:</div>
+              <div class='chengeStatus'>`
+              +(item.enabled ? '<button class="btn btn-info">正常</button>' : '<button class="btn btn-danger">禁言中...</button>')+
+              `</div>
+            </li>
+          </ul>
+        </div>
+        `)
+        $('#user').append(newDivUser);
+      })
+    })
+  }
+</script>

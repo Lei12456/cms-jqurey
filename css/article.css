@@ -1,0 +1,51 @@
+.article {
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+}
+.article-option {
+  height: 45px;
+}
+.article-option .btn-left button{
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.table {
+  text-align: center;
+}
+.btn-left {
+  float: left;
+}
+.btn-right {
+  width: 700px;
+  float:right;
+}
+.btn-right  input {
+  width: 120px;
+  display: inline-block;
+}
+#keyWords {
+  width: 200px;
+  margin: 0 10px;
+}
+/* 富文本编辑器的头部样式 */
+.w-e-toolbar li {
+  list-style: none;
+}
+.page{
+  margin: 0 auto;
+  text-align: center;
+}
+/* 图片放大背景 */
+.fillbg { 
+  background-color: rgba(0, 0, 0, 0.6);
+  bottom: 0; height: 100%; 
+  left: 0; opacity: 0; 
+  position: fixed; 
+  right: 0; top: 0; width: 100%;
+   z-index: 1100; display:none; 
+}
+.fillbg-active { 
+  opacity: 1; 
+  display:block;
+ }

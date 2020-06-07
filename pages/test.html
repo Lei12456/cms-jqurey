@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .fillbg { background-color: rgba(0, 0, 0, 0.6); bottom: 0; height: 100%; left: 0; opacity: 0; position: fixed; right: 0; top: 0; width: 100%; z-index: 1100; display:none; }
+    .fillbg-active { opacity: 1; display:block; }
+  </style>
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+     var newImg;
+      var clientH=$(window).height();
+      var clientW=$(window).width();
+      var w = '250';
+      var h = '250';
+      $(document).ready(function(){
+          $(".comment_pics").bind("click", function(){
+              newImg = $(this)[0].src;
+              $("body").append('<div class="fillbg"></div>');
+              $(".fillbg").addClass("fillbg-active");
+              $('.bgImg').css({'width': w+"px",'height': h+"px",'top':(clientH-h)/2+"px",'left':(clientW-w)/2+"px",'z-index':1101});
+              $('.bgImg').attr("src",newImg);
+          });
+  
+          $(".bgImg").bind("click", function(){
+              $(".fill-input").removeClass("fill-input-active");
+              setTimeout(function(){
+                  $(".fillbg-active").removeClass("fillbg-active");
+                  $(".fillbg").remove();
+              },300);
+              $('.bgImg').css({'width': '0px','height': '0px'});
+              $('.bgImg').attr("src",'');
+          });
+      });
+  </script>
+</head>
+<body>
+    <img class="comment_pics" width="50px" height="50px" src="../images/logo.png"/>
+    <div class="bg">
+        <img class="bgImg" style="width:200px; height:200px;position: fixed;" src="">
+    </div>  
+</body>
+</html>
+
+
+<!-- 引入jQuery -->

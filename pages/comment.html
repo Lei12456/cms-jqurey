@@ -1,0 +1,159 @@
+<div class="comment">
+  <ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" id="home-tab" data-toggle="tab" href="#comment-set" role="tab" aria-controls="home" aria-selected="true">评论设置</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="profile-tab" data-toggle="tab" href="#comment-list" role="tab" aria-controls="profile" aria-selected="false">评论列表</a>
+    </li>
+  </ul>
+  <div class="tab-content" id="myTabContent">
+    <!-- 评论设置 -->
+    <div class="tab-pane fade show active" id="comment-set" role="tabpanel" aria-labelledby="home-tab">
+      <table class="table" id="setTable">
+        <thead>
+          <tr>
+            <th>编号</th>
+            <th>文章标题</th>
+            <th>所属栏目</th>
+            <th>作者</th>
+            <th>发布时间</th>
+            <th>阅读次数</th>
+            <th>评论状态</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+      <!-- 分页按钮 -->
+      <div class="page">
+        <div id="commentPage" class="demo"></div>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="comment-list" role="tabpanel" aria-labelledby="profile-tab">
+      <table class="table" id="listTable">
+        <thead>
+          <tr>
+            <th>编号</th>
+            <th>所属文章</th>
+            <th>评论内容</th>
+            <th>评论者</th>
+            <th>评论时间</th>
+            <th>评论状态</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+      <!-- 分页按钮 -->
+      <div class="page">
+        <div id="commentPage" class="demo"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+
+  //审核评论,事件代理
+  $('#setTable,#listTable').on('click','.chengeStatus',function(){
+      var id = $(this).closest('tr').find('input').val();
+      myAjax('/manager/comment/checkComment','get',{id:id,status:'审核通过'},function(res){
+          if(res.status == 200){
+            findAllComment(0)
+          }
+      })
+    }
+  )
+  // 删除评论
+   $('#listTable').on('click','.comment-delete',function(){
+     var deleteId = $(this).closest('tr').find('input').val();
+      myAjax('/manager/comment/deleteCommentById','get',{id:deleteId},function(res){
+        if(res.status == 200){
+          findAllComment(0);
+          alert('删除成功');
+        }else{
+          alert('删除失败')
+        }
+
+      })
+   })
+  //查询所有评论
+  findAllComment(0)
+  function findAllComment(page){
+    var newData = [];
+    //清空表格
+    $('tbody').empty();
+    myAjax('/manager/comment/findComment','get',{page:page,pageSize:7},function(res){
+      res.data.list.forEach(function(item){
+        //查询所有栏目
+        if(item.article){ 
+          myAjax('/manager/category/findAllCategory','get',{},function(res){
+            item.categoryName = res.data.filter(function(it){
+              return it.id == item.article.categoryId;
+            })[0].name;
+          })
+          newData.push(item);
+        }
+      })
+      //评论设置内容
+      newData.forEach(function(item){
+        //使用定时器,用于新数组push完之后 执行
+        setTimeout(function(){
+          var newTr = $(`
+                    <tr>
+                        <td><input type="checkbox" value=`+item.id+`></td>
+                        <td>`+(item.article ? item.article.title : '--')+`</td>
+                        <td>`+(item.article ? item.categoryName: '--')+`</td>
+                        <td>`+(item.customer ? item.customer.nickname : '--')+`</td>
+                        <td>`+(item.article ? item.article.publishtime : '--')+`</td>
+                        <td>`+(item.article ? item.article.readtimes : '--')+`</td>
+                        <td>
+                          <div class='chengeStatus'>`
+                            +(item.status == '审核通过'? item.status : '<button class="btn btn-info">审核</button>')+
+                          `</div>
+                        </td>
+                    </tr> 
+                `)
+            $('#setTable').append(newTr);
+        }, 300);
+      })
+      //评论列表内容
+      res.data.list.forEach(function(item){
+        //使用定时器,用于新数组push完之后 执行
+        setTimeout(function(){
+          var newTr2 = $(`
+                    <tr>
+                        <td><input type="checkbox" value=`+item.id+`></td>
+                        <td>`+(item.article ? item.article.title : '--')+`</td>
+                        <td>`+item.content+`</td>
+                        <td>`+item.customerId+`</td>
+                        <td>`+item.commenttime+`</td>
+                        <td>
+                          <div class='chengeStatus'>`
+                            +(item.status == '审核通过'? '已通过' : '<button class="btn btn-info">审核</button>')+
+                          `</div>
+                        </td>
+                        <td>
+                          <span><i class="iconfont icon-shanchu comment-delete" title="删除"></i></span>
+                        </td>
+                    </tr> 
+                `)
+            $('#listTable').append(newTr2);
+        }, 200);
+      })
+      //用于分页
+      $(".demo").sPage({
+              page:res.data.page+1,
+              pageSize:res.data.pageSize,
+              total:res.data.total,
+              prevPage:"←",
+              nextPage:"→",
+              backFun:function(page){
+                findAllComment(page-1);
+              }
+      });
+    }) 
+  }
+  
+</script>

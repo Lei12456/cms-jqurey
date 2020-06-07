@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>登录</title>
+  <!-- 引入bootstrap样式 -->
+  <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+  <!-- 引入jQurey.js -->
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+    $(function(){
+      $('.loginBtn').on('click',function(){
+        var username = $('#username').val();
+        var password = $('#password').val();
+        $.ajax({
+              url:'http://39.108.158.38:8099/manager/user/login',
+              method:'post',
+              data:JSON.stringify({
+                  username:username,
+                  password:password
+              }),
+              contentType:'application/json',
+              success:function(res){
+                if(res.data){
+                    localStorage.setItem('token',res.data.token)
+                    var token = localStorage.getItem('token');
+                    if(token){
+                      // location.href = 'http://39.108.158.38/cms/index.html';
+                      location.href = 'http://127.0.0.1:5500/cms/index.html';
+                    }
+                } else{
+                    alert('请输入正确的用户名和密码！')
+                }
+            },
+        })
+      })
+    })
+  </script>
+  <style>
+    html,body {
+        height: 100%;
+    }
+    .login {
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-image: url('./images/loginBackground.jpg');
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+    }
+    .loginInner {
+        width: 400px;
+        height: 300px;
+        background-color: rgba(57,117,95,0.1);
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    .loginInner:hover{
+        box-shadow: 5px 5px 15px white;
+    }
+    .loginInner label{
+        color: white;
+    }
+    .loginInner h4 {
+        text-align: center;
+        color: white;
+    }
+    .loginBtn {
+        float: right;
+    }
+    .form-group:nth-child(3) {
+      margin-top: 35px;
+    }
+  </style>
+</head>
+<body>
+  <!-- 登录功能 -->
+  <div class="login">
+    <div class="loginInner">
+      <h4>看点资讯登录</h4>
+        <div class="form-group">
+            <label for="username">用户名:</label>
+            <input type="username" class="form-control" id="username" aria-describedby1="emailHelp">
+        </div>
+        <div class="form-group">
+            <label for="password">密码:</label>
+            <input type="password" class="form-control" id="password" aria-describedby="emailHelp">
+        </div>
+        <div class="form-group">
+          <button class="btn btn-primary regBtn">注册</button>
+          <button class="btn btn-primary loginBtn">登录</button>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

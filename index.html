@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>看点资讯精选</title>
+  <!-- 导入首页样式 -->
+  <link rel="stylesheet" href="./css/index.css">
+  <!-- 导入图标样式 -->
+  <link rel="stylesheet" href="./css/iconfont.css">
+  <!-- 导入栏目管理样式 -->
+  <link rel="stylesheet" href="./css/category.css">
+  <!-- 引入文章管理样式 -->
+  <link rel="stylesheet" href="./css/article.css">
+  <!-- 引用用户管理的样式 -->
+  <link rel="stylesheet" href="./css/user.css">
+  <!-- 引用评论管理样式-->
+  <link rel="stylesheet" href="./css/comment.css">
+  <!-- 引入bootstrap样式 -->
+  <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+  <!-- 引入树形结构样式 -->
+  <link rel="stylesheet" href="./css/zTree_v3/css/demo.css">
+  <link rel="stylesheet" href="./css/zTree_v3/css/zTreeStyle/zTreeStyle.css">
+  <!-- 分页插件的css -->
+  <link rel="stylesheet" href="./css/jquery.sPage.css">
+  <!-- 日期选择器中的左右图标按钮 -->
+  <link rel="stylesheet" href="http://www.jq22.com/jquery/font-awesome.4.6.0.css">
+  <!-- 日期插件的css -->
+  <link rel="stylesheet" href="./css/foundation-datepicker.css" type="text/css">
+  <!-- 图片上传插件css -->
+  <link rel="stylesheet" href="./css/FraUpload.css">
+  
+
+  <!-- 引入jQurey.js -->
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <!-- 引入树形结构js -->
+  <script src="./css/zTree_v3/js/jquery.ztree.core.min.js"></script>
+  <!-- 引入ajax请求 -->
+  <script src="./js/ajax.js"></script>
+  <!-- 导入首页切换js -->
+  <script src="./js/index.js"></script>
+  <!-- 引入bootstrap.js -->
+  <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  <!-- 分页插件的js -->
+  <script src="./js/jquery.sPage.js"></script>
+  <!-- 日期插件的js -->
+  <script src="./js/foundation-datepicker.js"></script>
+  <!-- 引入富文本编辑器.js -->
+  <script src="./js/wangEditor.js"></script> 
+  <!-- 上传插件的js -->
+  <script src="./js/FraUpload.js"></script>
+  <script src="./js/Sortable/Sortable.js"></script>
+  <script src="./js/MD5.js"></script>
+  <!-- 引入echear.js -->
+  <script src="https://cdn.bootcdn.net/ajax/libs/echarts/4.7.0/echarts.min.js"></script>
+  <script>
+    $(function(){
+      var token = localStorage.getItem('token');
+      $.ajax({
+        url:'http://39.108.158.38:8099/manager/user/info',
+        method:'get',
+        data:{token:token},
+        success:function(res){
+          console.log(res.data.userface);
+          if(res.data){
+            $('#userFace').prop('src',res.data.userface)
+          }
+        }
+      })
+    })
+  </script>
+</head>
+<body>
+  <div class="wrapper">
+    <!-- 页面左侧 -->
+    <div class="left">
+      <!-- 左侧的头部 -->
+      <div class="left-header">
+        <img src="./images/logo.png" alt="">
+        <span>看点资讯</span>
+      </div>
+      <!-- 左侧的导航 -->
+      <div class="left-nav">
+        <ul>
+          <li><i class="iconfont icon-index-copy"></i>首页</li>
+          <li><i class="iconfont icon-lanmu"></i>栏目管理</li>
+          <li><i class="iconfont icon-wenzhang"></i>文章管理</li>
+          <li><i class="iconfont icon-zhaomugongyingshangshangji"></i>用户管理</li>
+          <li><i class="iconfont icon-pinglun"></i>评论管理</li>
+        </ul>
+      </div>
+    </div>
+    <div class="right">
+      <!-- 右侧头部 -->
+      <div class="right-header">
+        <img id="userFace" src="./images/logo.png" alt="">
+      </div>
+      <!-- 右侧显示内容 -->
+      <div class="right-content">
+
+      </div>
+    </div>
+  </div>
+</body>
+</html>

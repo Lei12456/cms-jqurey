@@ -1,0 +1,76 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+html,body,.wrapper {
+  height: 100%;
+}
+/* 页面左边样式 */
+.left {
+  height: 100%;
+  width: 15%;
+  background-color:#304156;
+  float: left;
+}
+.left-header {
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #00284d;
+}
+.left-header img {
+  height: 30px;
+  margin-right: 20px;
+}
+.left-header span {
+  color: #fff;
+  margin-left: 20 px;
+  font-weight: 700;
+  font-size: 16px;
+}
+.left-nav {
+
+}
+.left-nav li {
+  height: 60px;
+  text-align: center;
+  line-height: 50px;
+  list-style: none;
+  color: #ccc;
+}
+.left-nav li:hover {
+  cursor: pointer;
+}
+.left-nav li > i {
+  float: left;
+  margin-left: 50px;
+}
+
+/* 页面右边样式 */
+.right {
+  height: 100%;
+  width: 85%;
+  float: left;
+  background-color: #f0f2f5;
+}
+/* 右侧头部内容 */
+.right-header {
+  height: 60px;
+  background-color: #fff;
+}
+.right-header img {
+  height: 30px;
+  border-radius: 100%;
+  float: right;
+  margin-right: 40px;
+  margin-top: 15px;
+}
+/* 右侧显示内容 */
+.right-content {
+  margin: 10px;
+  height: 80%;
+  background-color: #fff;
+  border-radius: 5px;
+  padding: 10px;
+}
